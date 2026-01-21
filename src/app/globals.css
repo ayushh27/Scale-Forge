@@ -1,0 +1,364 @@
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
+
+:root {
+  --primary-h: 154;
+  --primary-s: 55%;
+  --primary-l: 45%;
+  --primary-foreground-h: 0;
+  --primary-foreground-s: 0%;
+  --primary-foreground-l: 100%;
+
+  --background-h: 0;
+  --background-s: 0%;
+  --background-l: 100%;
+  --foreground-h: 240;
+  --foreground-s: 10%;
+  --foreground-l: 3.9%;
+
+  --header-height: 80px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background-h: 224;
+    --background-s: 71%;
+    --background-l: 4%;
+    --foreground-h: 210;
+    --foreground-s: 20%;
+    --foreground-l: 98%;
+
+    --muted-h: 215;
+    --muted-s: 27.9%;
+    --muted-l: 13%;
+    --muted-foreground-h: 217.9;
+    --muted-foreground-s: 10.6%;
+    --muted-foreground-l: 64.9%;
+
+    --accent-h: 215;
+    --accent-s: 27.9%;
+    --accent-l: 13%;
+    --accent-foreground-h: 210;
+    --accent-foreground-s: 20%;
+    --accent-foreground-l: 98%;
+
+    --border-h: 215;
+    --border-s: 27.9%;
+    --border-l: 13%;
+  }
+}
+
+@theme {
+  --color-primary: hsl(var(--primary-h) var(--primary-s) var(--primary-l));
+  --color-primary-foreground: hsl(var(--primary-foreground-h) var(--primary-foreground-s) var(--primary-foreground-l));
+
+  --color-background: hsl(var(--background-h) var(--background-s) var(--background-l));
+  --color-foreground: hsl(var(--foreground-h) var(--foreground-s) var(--foreground-l));
+
+  --color-muted: hsl(var(--muted-h) var(--muted-s) var(--muted-l));
+  --color-muted-foreground: hsl(var(--muted-foreground-h) var(--muted-foreground-s) var(--muted-foreground-l));
+
+  --color-accent: hsl(var(--accent-h) var(--accent-s) var(--accent-l));
+  --color-accent-foreground: hsl(var(--accent-foreground-h) var(--accent-foreground-s) var(--accent-foreground-l));
+
+  --color-border: hsl(var(--border-h) var(--border-s) var(--border-l));
+}
+
+@layer base {
+  html {
+    /* Always keep the scrollbar gutter to prevent layout shifts */
+    scrollbar-gutter: stable;
+    height: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased break-words;
+    font-family: var(--font-outfit), sans-serif;
+    min-height: 100%;
+    overflow-x: hidden;
+    hyphens: auto;
+  }
+}
+
+/* Premium Minimalist Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.2);
+  border-radius: 100px;
+  border: 2px solid hsl(var(--background));
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary) / 0.5);
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.perspective-2000 {
+  perspective: 2000px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+@keyframes float-3d {
+
+  0%,
+  100% {
+    transform: translateY(0) rotateX(0) rotateY(0);
+  }
+
+  50% {
+    transform: translateY(-20px) rotateX(2deg) rotateY(2deg);
+  }
+}
+
+.animate-float-3d {
+  animation: float-3d 8s ease-in-out infinite;
+}
+
+.glass-morphism {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.clip-path-slant {
+  clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+}
+
+/* --- Documentation Typography & Layout Refinements --- */
+
+.doc-content {
+  line-height: 1.8;
+  font-size: 1.125rem;
+  color: hsl(var(--foreground-h) var(--foreground-s) var(--foreground-l));
+  /* Optimal readable width for long-form text */
+  max-width: 75ch;
+  margin: 0 auto;
+}
+
+/* Vertical Rhythm: Systematic Spacing */
+.doc-content>*+* {
+  margin-top: 2rem;
+}
+
+/* Heading Hierarchy */
+.doc-content h1,
+.doc-content h2,
+.doc-content h3,
+.doc-content h4 {
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  color: white;
+  line-height: 1.2;
+  scroll-margin-top: 120px;
+}
+
+.doc-content h1 {
+  font-size: 3.5rem;
+  margin-top: 5rem;
+  margin-bottom: 2.5rem;
+}
+
+.doc-content h2 {
+  font-size: 2.25rem;
+  margin-top: 4.5rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid hsl(var(--border-h) var(--border-s) var(--border-l) / 0.3);
+}
+
+.doc-content h3 {
+  font-size: 1.625rem;
+  margin-top: 3.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.doc-content h4 {
+  font-size: 1.25rem;
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+}
+
+/* Paragraphs & Narrative */
+.doc-content p {
+  margin-bottom: 1.5rem;
+  color: hsl(var(--muted-foreground-h) var(--muted-foreground-s) var(--muted-foreground-l));
+}
+
+.doc-content strong {
+  color: white;
+  font-weight: 700;
+}
+
+/* Lists Mastery */
+.doc-content ul,
+.doc-content ol {
+  padding-left: 1.75rem;
+  margin-bottom: 2rem;
+}
+
+.doc-content li {
+  margin-bottom: 0.75rem;
+  position: relative;
+}
+
+.doc-content ul>li::before {
+  content: "";
+  position: absolute;
+  left: -1.75rem;
+  top: 0.85rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: hsl(var(--primary-h) var(--primary-s) var(--primary-l) / 0.5);
+  border-radius: 50%;
+}
+
+/* Code Blocks */
+.doc-content pre {
+  margin: 3rem 0;
+  padding: 2rem;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 1.5rem;
+  overflow-x: auto;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.doc-content code {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.95em;
+  color: hsl(var(--primary-h) var(--primary-s) var(--primary-l));
+  background: rgba(var(--primary-h), var(--primary-s), var(--primary-l), 0.1);
+  padding: 0.2em 0.4em;
+  border-radius: 0.4em;
+}
+
+.doc-content pre code {
+  background: transparent;
+  padding: 0;
+  color: #e2e8f0;
+}
+
+/* Tables Styling */
+.doc-content table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 3.5rem 0;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.doc-content th {
+  background: rgba(255, 255, 255, 0.03);
+  text-align: left;
+  padding: 1.25rem 1.5rem;
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: hsl(var(--primary-h) var(--primary-s) var(--primary-l));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.doc-content td {
+  padding: 1.25rem 1.5rem;
+  font-size: 0.95rem;
+  color: hsl(var(--muted-foreground-h) var(--muted-foreground-s) var(--muted-foreground-l));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.doc-content tr:last-child td {
+  border-bottom: none;
+}
+
+/* Dividers & Blockquotes */
+.doc-content hr {
+  margin: 5rem 0;
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.doc-content blockquote {
+  margin: 3rem 0;
+  padding: 2rem 2.5rem;
+  border-left: 4px solid hsl(var(--primary-h) var(--primary-s) var(--primary-l));
+  background: rgba(var(--primary-h), var(--primary-s), var(--primary-l), 0.03);
+  font-style: italic;
+  font-size: 1.25rem;
+  border-radius: 0 1.5rem 1.5rem 0;
+}
+
+@media (max-width: 768px) {
+  .doc-content {
+    font-size: 1rem;
+    line-height: 1.7;
+    padding: 0 0.5rem;
+  }
+
+  .doc-content h1 {
+    font-size: 2.25rem;
+    margin-top: 3.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .doc-content h2 {
+    font-size: 1.75rem;
+    margin-top: 3rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .doc-content h3 {
+    font-size: 1.5rem;
+    margin-top: 2.5rem;
+  }
+
+  .doc-content pre {
+    padding: 1.25rem;
+    margin: 2rem 0;
+    border-radius: 1rem;
+  }
+
+  .doc-content table {
+    font-size: 0.85rem;
+    margin: 2rem 0;
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .doc-content th,
+  .doc-content td {
+    padding: 0.75rem 1rem;
+  }
+
+  .doc-content blockquote {
+    padding: 1.5rem;
+    font-size: 1.125rem;
+    margin: 2rem 0;
+  }
+
+  .container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
