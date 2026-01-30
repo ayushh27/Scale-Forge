@@ -10,8 +10,6 @@ import {
     User,
     Bookmark,
     History,
-    Sun,
-    Moon,
     Github,
     Monitor,
     Code2,
@@ -277,7 +275,6 @@ export default function Navbar() {
     const pathname = usePathname();
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [theme, setTheme] = useState<'dark' | 'light'>('dark');
     const { stats } = useUserStats();
     const navRef = useRef<HTMLDivElement>(null);
     const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -331,11 +328,6 @@ export default function Navbar() {
         }
     };
 
-    const toggleTheme = () => {
-        const nextTheme = theme === 'dark' ? 'light' : 'dark';
-        setTheme(nextTheme);
-        document.documentElement.classList.toggle('dark', nextTheme === 'dark');
-    };
 
     const lastViewed = stats.history[0];
     const progressPercent = Math.min(100, (stats.completedArticles.length / 50) * 100);
@@ -429,12 +421,6 @@ export default function Navbar() {
                                 <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-primary rounded-full border-2 border-background" />
                             )}
                         </Link>
-                        <button
-                            onClick={toggleTheme}
-                            className="w-8 h-8 md:w-9 md:h-9 flex items-center justify-center rounded-xl hover:bg-white/5 text-muted-foreground"
-                        >
-                            {theme === 'dark' ? <Moon className="w-3.5 h-3.5 md:w-4 md:h-4" /> : <Sun className="w-3.5 h-3.5 md:w-4 md:h-4" />}
-                        </button>
                     </div>
 
                     <Link href="/profile" className="hidden sm:flex w-11 h-11 bg-foreground text-background rounded-2xl items-center justify-center shadow-lg hover:opacity-90">

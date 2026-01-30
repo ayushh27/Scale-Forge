@@ -15,12 +15,30 @@
   --primary-foreground-s: 0%;
   --primary-foreground-l: 100%;
 
-  --background-h: 0;
-  --background-s: 0%;
-  --background-l: 100%;
-  --foreground-h: 240;
-  --foreground-s: 10%;
-  --foreground-l: 3.9%;
+  --background-h: 224;
+  --background-s: 71%;
+  --background-l: 4%;
+  --foreground-h: 210;
+  --foreground-s: 20%;
+  --foreground-l: 98%;
+
+  --muted-h: 215;
+  --muted-s: 27.9%;
+  --muted-l: 13%;
+  --muted-foreground-h: 217.9;
+  --muted-foreground-s: 10.6%;
+  --muted-foreground-l: 64.9%;
+
+  --accent-h: 215;
+  --accent-s: 27.9%;
+  --accent-l: 13%;
+  --accent-foreground-h: 210;
+  --accent-foreground-s: 20%;
+  --accent-foreground-l: 98%;
+
+  --border-h: 215;
+  --border-s: 27.9%;
+  --border-l: 13%;
 
   /* === Layout Dimensions === */
   --header-height: 80px;
@@ -136,34 +154,6 @@
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background-h: 224;
-    --background-s: 71%;
-    --background-l: 4%;
-    --foreground-h: 210;
-    --foreground-s: 20%;
-    --foreground-l: 98%;
-
-    --muted-h: 215;
-    --muted-s: 27.9%;
-    --muted-l: 13%;
-    --muted-foreground-h: 217.9;
-    --muted-foreground-s: 10.6%;
-    --muted-foreground-l: 64.9%;
-
-    --accent-h: 215;
-    --accent-s: 27.9%;
-    --accent-l: 13%;
-    --accent-foreground-h: 210;
-    --accent-foreground-s: 20%;
-    --accent-foreground-l: 98%;
-
-    --border-h: 215;
-    --border-s: 27.9%;
-    --border-l: 13%;
-  }
-}
 
 @theme {
   --color-primary: hsl(var(--primary-h) var(--primary-s) var(--primary-l));
@@ -186,6 +176,7 @@
     /* Always keep the scrollbar gutter to prevent layout shifts */
     scrollbar-gutter: stable;
     height: 100%;
+    color-scheme: dark;
   }
 
   body {
