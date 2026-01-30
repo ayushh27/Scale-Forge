@@ -38,6 +38,7 @@ import { COMPUTER_SCIENCE_ARTICLES } from "@/data/articles/cs-core";
 import { COMPARISON_ARTICLES } from "@/data/articles/comparisons";
 import { CASE_STUDY_ARTICLES } from "@/data/articles/case-studies";
 import { INTERVIEW_PREP_ARTICLES } from "@/data/articles/interview-prep";
+import { LANGUAGES_ARTICLES } from "@/data/articles/languages";
 
 export type Article = {
     id: string;
@@ -94,7 +95,8 @@ const ALL_ARTICLES: Article[] = [
     ...COMPUTER_SCIENCE_ARTICLES,
     ...COMPARISON_ARTICLES,
     ...CASE_STUDY_ARTICLES,
-    ...INTERVIEW_PREP_ARTICLES
+    ...INTERVIEW_PREP_ARTICLES,
+    ...LANGUAGES_ARTICLES
 ];
 
 export function useArticles() {
@@ -112,7 +114,12 @@ export function useArticle(slug: string) {
         queryKey: ["article", slug],
         queryFn: async () => {
             await new Promise(r => setTimeout(r, 200));
-            return ALL_ARTICLES.find(a => a.slug === slug);
+            const article = ALL_ARTICLES.find(a => a.slug === slug);
+            if (!article) {
+                throw new Error(`Article not found: ${slug}`);
+            }
+            return article;
         },
+        retry: false, // Don't retry if article doesn't exist
     });
 }

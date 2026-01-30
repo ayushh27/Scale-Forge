@@ -8,10 +8,11 @@ import { cn } from "@/lib/utils";
 import { useState, useMemo, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { HUB_REGISTRY } from "@/data/hubs";
+import { ContentContainer, PageHeader } from "@/components/layout";
 
 export default function LearnPage() {
     return (
-        <Suspense fallback={<div className="container mx-auto px-6 py-32 animate-pulse h-screen bg-muted/10 rounded-[3rem]" />}>
+        <Suspense fallback={<div className="content-container py-32 animate-pulse h-screen bg-muted/10 rounded-[3rem]" />}>
             <LearnContent />
         </Suspense>
     );
@@ -52,7 +53,7 @@ function LearnContent() {
     };
 
     return (
-        <div className="container mx-auto px-6 py-12">
+        <ContentContainer size="xl" className="py-8 md:py-12">
             <div className="flex flex-col gap-12 mb-20">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
                     <div className="max-w-3xl">
@@ -217,6 +218,6 @@ function LearnContent() {
                     )}
                 </div>
             </div>
-        </div>
+        </ContentContainer>
     );
 }

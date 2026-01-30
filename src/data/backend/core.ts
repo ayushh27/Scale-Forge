@@ -24,7 +24,40 @@ A REST API is more than just JSON over HTTP; it is a long-term contract between 
 An idempotent operation is one where the side-effects of $N > 0$ identical requests is the same as for a single request.
 - **GET, PUT, DELETE:** Historically idempotent.
 - **POST:** Not idempotent.
-- **Production Pattern:** Use **Idempotency Keys** (e.g., \`X-Idempotency-Key\`) in headers for POST requests (like payments) to prevent double-billing on network retries.
+- **Production Pattern:** Use **Idempotency Keys** (e.g., \`X-Idempotency-Key\`) in headers for POST requests.
+
+\`\`\`typescript
+// Express.js Middleware Example
+import { Request, Response, NextFunction } from 'express';
+import { redisClient } from './redis';
+
+export const idempotency = async (req: Request, res: Response, next: NextFunction) => {
+  const key = req.headers['x-idempotency-key'];
+  if (!key) return next();
+
+  const cached = await redisClient.get(\`idempotency:\${key}\`);
+  if (cached) {
+    return res.set('X-Cache', 'HIT').send(JSON.parse(cached));
+  }
+
+  // Hook into response send to cache it
+  const originalSend = res.send;
+  res.send = (body) => {
+    redisClient.set(\`idempotency:\${key}\`, JSON.stringify(body), { EX: 86400 });
+    return originalSend.call(res, body);
+  };
+  next();
+};
+\`\`\`
+
+<details>
+<summary>Deep Dive: Implementing Idempotency</summary>
+
+1. Client generates \`UUIDv4\` key.
+2. Server checks Redis for key.
+3. If exists, return cached response.
+4. If new, process and cache.
+</details>
 
 ---
 
@@ -135,6 +168,58 @@ Network issues mean messages can be delivered twice.
 ## 4. Backpressure Management
 If your workers are too slow, the queue grows infinitely.
 - **Fix:** Implement **Rate Limiting** on the producer or **Auto-scaling** on the consumers based on queue depth.
+        `
+    },
+    {
+        id: "dsa-arrays-memory-visualized",
+        slug: "mastering-arrays-and-memory",
+        title: "Arrays: Visualized Memory Layouts",
+        description: "Interactive exploration of contiguous memory allocation, pointer arithmetic, and CPU cache lines.",
+        category: "DSA",
+        difficulty: "Beginner",
+        tags: ["Arrays", "Memory", "Pointers"],
+        viewCount: 15400,
+        updatedAt: "2024-05-20",
+        author: "Scaleforge Core",
+        version: "2.1.0",
+        prerequisites: ["dsa-foundations"],
+        content: `
+# Arrays: The Truth About Contiguous Memory
+
+Most developers think of an array as just a "list of things". To a CPU, it is a glorious, cache-friendly block of contiguous bytes.
+
+## 1. Visualizing Memory Access
+When you access \`arr[i]\`, the computer performs simple arithmetic:
+$$Address = Base + (i \times SizeOf(Element))$$
+
+This allows for $O(1)$ random access.
+
+\`\`\`visualizer-array
+{
+  "initialData": [10, 20, 30, 40, 50],
+  "label": "Array Memory Address Space",
+  "highlightIndices": [0, 2, 4],
+  "pointerIndices": [
+    { "index": 0, "label": "Base (0x100)", "color": "rose" },
+    { "index": 2, "label": "Base+8 (0x108)", "color": "blue" }
+  ]
+}
+\`\`\`
+
+## 2. The Cache Line Effect
+Because arrays are contiguous, fetching index \`0\` often brings \`1\`, \`2\`, and \`3\` into the L1 Cache for free. This is why **Linked Lists** (which scatter nodes in memory) are significantly slower in practice, even if the Big-O is the same for iteration.
+
+\`\`\`visualizer-array
+{
+  "initialData": [99, 88, 77, 66, 55, 44, 33, 22],
+  "label": "CPU L1 Cache Line Load",
+  "highlightIndices": [0, 1, 2, 3],
+  "pointerIndices": [
+      { "index": 0, "label": "Fetch[0]", "color": "amber" },
+      { "index": 3, "label": "Prefetched", "color": "blue" }
+  ]
+}
+\`\`\`
         `
     }
 ];

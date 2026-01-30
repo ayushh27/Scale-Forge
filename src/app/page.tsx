@@ -12,37 +12,37 @@ export default function Home() {
 
             <main className="container mx-auto px-6 relative z-10">
                 {/* Hero Section */}
-                <section className="pt-32 pb-20 md:pt-48 md:pb-32 text-center max-w-5xl mx-auto perspective-2000">
+                <section className="pt-24 pb-16 md:pt-48 md:pb-32 text-center max-w-5xl mx-auto perspective-2000">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9, rotateX: 10 }}
                         animate={{ opacity: 1, scale: 1, rotateX: 0 }}
                         transition={{ duration: 1, ease: "easeOut" }}
                         className="preserve-3d"
                     >
-                        <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full glass-morphism border border-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.3em] mb-12 animate-float-3d">
-                            <span className="w-2 h-2 rounded-full bg-primary" />
+                        <div className="inline-flex items-center gap-3 px-4 py-1.5 md:px-6 md:py-2 rounded-full glass-morphism border border-primary/20 text-primary text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em] mb-8 md:mb-12 animate-float-3d">
+                            <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-primary" />
                             Engineering Blueprint v1.0.4
                         </div>
 
-                        <h1 className="text-4xl sm:text-6xl md:text-9xl font-black tracking-tighter mb-10 leading-[0.85] select-none">
+                        <h1 className="text-4xl sm:text-6xl md:text-9xl font-black tracking-tighter mb-8 md:mb-10 leading-[0.9] md:leading-[0.85] select-none">
                             Forge Your <br />
                             <span className="text-primary italic">Sovereign Architecture</span>
                         </h1>
 
-                        <p className="text-lg md:text-3xl text-muted-foreground mb-16 max-w-3xl mx-auto leading-relaxed font-medium px-4">
+                        <p className="text-base md:text-3xl text-muted-foreground mb-12 md:mb-16 max-w-3xl mx-auto leading-relaxed font-medium px-4">
                             The definitive knowledge base for building high-scale,
                             <span className="text-foreground"> fault-tolerant</span> systems and mastering professional software design.
                         </p>
 
                         {/* Search Box */}
-                        <div className="relative max-w-3xl mx-auto mb-20 preserve-3d">
+                        <div className="relative max-w-3xl mx-auto mb-16 md:mb-20 preserve-3d px-4 md:px-0">
                             <div className="absolute inset-x-0 -bottom-10 h-20 bg-primary/10 blur-[100px] -z-10" />
                             <div className="relative group">
-                                <Search className="absolute left-6 md:left-10 top-1/2 -translate-y-1/2 w-6 h-6 md:w-8 h-8 text-muted-foreground group-focus-within:text-primary group-focus-within:scale-110 transition-all" />
+                                <Search className="absolute left-6 md:left-10 top-1/2 -translate-y-1/2 w-5 h-5 md:w-8 md:h-8 text-muted-foreground group-focus-within:text-primary group-focus-within:scale-110 transition-all" />
                                 <input
                                     type="text"
                                     placeholder="Architect a Distributed DFS..."
-                                    className="w-full pl-16 md:pl-24 pr-12 py-6 md:py-10 glass-morphism border border-white/10 rounded-[2rem] md:rounded-[3rem] text-lg md:text-2xl shadow-[0_40px_100px_-20px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary/30 transition-all font-black placeholder:text-muted-foreground/30"
+                                    className="w-full pl-14 md:pl-24 pr-6 md:pr-12 py-4 md:py-10 glass-morphism border border-white/10 rounded-[2rem] md:rounded-[3rem] text-base md:text-2xl shadow-[0_40px_100px_-20px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary/30 transition-all font-black placeholder:text-muted-foreground/30"
                                 />
                                 <div className="absolute right-6 top-1/2 -translate-y-1/2 hidden md:flex gap-2">
                                     <kbd className="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black text-muted-foreground uppercase">Ctrl</kbd>
@@ -51,12 +51,12 @@ export default function Home() {
                             </div>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row items-center justify-center gap-6 md:gap-8 px-6">
-                            <Link href="/learn" className="w-full sm:w-auto px-10 md:px-14 py-5 md:py-7 bg-primary text-background rounded-2xl md:rounded-[2rem] font-black text-xs uppercase tracking-widest hover:shadow-primary/30 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-4 group shadow-2xl text-center">
-                                Start Knowledge Hunt <ArrowRight className="w-5 h-5 md:w-6 h-6 group-hover:translate-x-3 transition-transform" />
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-8 px-6">
+                            <Link href="/learn" className="w-full sm:w-auto px-8 md:px-14 py-4 md:py-7 bg-primary text-background rounded-2xl md:rounded-[2rem] font-black text-xs uppercase tracking-widest hover:shadow-primary/30 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-4 group shadow-2xl text-center">
+                                Start Knowledge Hunt <ArrowRight className="w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-3 transition-transform" />
                             </Link>
-                            <Link href="/contribute" className="w-full sm:w-auto px-10 md:px-14 py-5 md:py-7 glass-morphism border border-white/10 rounded-2xl md:rounded-[2rem] font-black text-xs uppercase tracking-widest hover:bg-white/5 hover:translate-y-[-4px] active:scale-95 transition-all flex items-center justify-center gap-4 group text-center">
-                                <Github className="w-5 h-5 md:w-6 h-6 group-hover:rotate-12 transition-transform" /> Contribute
+                            <Link href="/contribute" className="w-full sm:w-auto px-8 md:px-14 py-4 md:py-7 glass-morphism border border-white/10 rounded-2xl md:rounded-[2rem] font-black text-xs uppercase tracking-widest hover:bg-white/5 hover:translate-y-[-4px] active:scale-95 transition-all flex items-center justify-center gap-4 group text-center">
+                                <Github className="w-5 h-5 md:w-6 md:h-6 group-hover:rotate-12 transition-transform" /> Contribute
                             </Link>
                         </div>
                     </motion.div>

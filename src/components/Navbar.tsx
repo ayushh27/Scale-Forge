@@ -230,13 +230,13 @@ const MobileNavSection = ({
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <div className="space-y-2">
+        <div className="space-y-1 sm:space-y-2">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-full flex items-center justify-between p-4 rounded-2xl hover:bg-white/5 transition-all group"
+                className="w-full flex items-center justify-between p-3 sm:p-4 rounded-xl sm:rounded-2xl hover:bg-white/5 transition-all group"
             >
-                <span className="font-black text-sm uppercase tracking-widest text-white group-hover:text-primary transition-colors">{title}</span>
-                <ChevronDown className={cn("w-4 h-4 text-white/60 transition-transform", isOpen && "rotate-180")} />
+                <span className="font-black text-xs sm:text-sm uppercase tracking-wider sm:tracking-widest text-white group-hover:text-primary transition-colors">{title}</span>
+                <ChevronDown className={cn("w-4 h-4 text-white/60 transition-transform shrink-0", isOpen && "rotate-180")} />
             </button>
 
             <AnimatePresence>
@@ -245,22 +245,22 @@ const MobileNavSection = ({
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        className="overflow-hidden pl-4 border-l border-white/5 ml-2"
+                        className="overflow-hidden pl-3 sm:pl-4 border-l border-white/5 ml-2"
                     >
-                        <div className="grid gap-1 pb-4">
+                        <div className="grid gap-0.5 sm:gap-1 pb-3 sm:pb-4">
                             <Link
                                 href={data.href}
                                 onClick={onClose}
-                                className="p-3 text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2"
+                                className="p-2 sm:p-3 text-[10px] sm:text-xs font-black uppercase tracking-wider sm:tracking-widest text-primary flex items-center gap-2"
                             >
-                                <ArrowRight className="w-3 h-3" /> Start Path
+                                <ArrowRight className="w-3 h-3 shrink-0" /> Start Path
                             </Link>
                             {data.items.flatMap(item => item.links).map(link => (
                                 <Link
                                     key={link.label}
                                     href={link.href}
                                     onClick={onClose}
-                                    className="p-3 text-sm font-bold text-muted-foreground hover:text-foreground hover:bg-white/5 rounded-xl transition-all"
+                                    className="p-2 sm:p-3 text-xs sm:text-sm font-bold text-muted-foreground hover:text-foreground hover:bg-white/5 rounded-lg sm:rounded-xl transition-all truncate"
                                 >
                                     {link.label}
                                 </Link>
@@ -280,6 +280,30 @@ export default function Navbar() {
     const [theme, setTheme] = useState<'dark' | 'light'>('dark');
     const { stats } = useUserStats();
     const navRef = useRef<HTMLDivElement>(null);
+    const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Handle delayed menu close - gives user time to move to mega menu
+    const handleMenuClose = () => {
+        closeTimeoutRef.current = setTimeout(() => {
+            setActiveMenu(null);
+        }, 300); // 300ms delay before closing
+    };
+
+    const handleMenuOpen = (key: string) => {
+        // Cancel any pending close timeout
+        if (closeTimeoutRef.current) {
+            clearTimeout(closeTimeoutRef.current);
+            closeTimeoutRef.current = null;
+        }
+        setActiveMenu(key);
+    };
+
+    const cancelMenuClose = () => {
+        if (closeTimeoutRef.current) {
+            clearTimeout(closeTimeoutRef.current);
+            closeTimeoutRef.current = null;
+        }
+    };
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -288,7 +312,13 @@ export default function Navbar() {
             }
         };
         document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+            // Cleanup timeout on unmount
+            if (closeTimeoutRef.current) {
+                clearTimeout(closeTimeoutRef.current);
+            }
+        };
     }, []);
 
     const [searchQuery, setSearchQuery] = useState("");
@@ -330,13 +360,14 @@ export default function Navbar() {
 
                     {/* Desktop Nav */}
                     <nav
-                        onMouseLeave={() => setActiveMenu(null)}
+                        onMouseLeave={handleMenuClose}
+                        onMouseEnter={cancelMenuClose}
                         className="hidden xl:flex items-center gap-0.5 font-bold text-[13px]"
                     >
                         {Object.keys(MEGA_MENU_DATA).map((key, index) => (
                             <div
                                 key={key}
-                                onMouseEnter={() => setActiveMenu(key)}
+                                onMouseEnter={() => handleMenuOpen(key)}
                                 className={cn(
                                     "relative h-[var(--header-height)] items-center",
                                     index > 4 ? "hidden 2xl:flex" : "flex"
@@ -426,7 +457,8 @@ export default function Navbar() {
                         initial={{ opacity: 0, scale: 0.98, translateY: -10, rotateX: -2 }}
                         animate={{ opacity: 1, scale: 1, translateY: 0, rotateX: 0 }}
                         exit={{ opacity: 0, scale: 0.98, translateY: -10, rotateX: -2 }}
-                        onMouseLeave={() => setActiveMenu(null)}
+                        onMouseLeave={handleMenuClose}
+                        onMouseEnter={cancelMenuClose}
                         transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
                         className="absolute top-full left-0 right-0 bg-background/95 backdrop-blur-3xl border-b border-white/5 shadow-3xl overflow-hidden perspective-2000"
                     >
@@ -524,71 +556,78 @@ export default function Navbar() {
                             animate={{ x: 0 }}
                             exit={{ x: "100%" }}
                             transition={{ type: "spring", damping: 30, stiffness: 300 }}
-                            className="fixed top-0 right-0 bottom-0 w-full max-w-[320px] bg-background border-l border-white/5 z-[120] flex flex-col shadow-2xl"
+                            className="fixed top-0 right-0 w-full sm:max-w-[320px] bg-background border-l border-white/5 z-[120] shadow-2xl h-[100dvh]"
                         >
-                            {/* Mobile Header */}
-                            <div className="p-6 border-b border-white/5 flex items-center justify-between bg-muted/10">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
-                                        <Zap className="w-4 h-4" />
+                            <div className="flex flex-col h-full">
+                                {/* Mobile Header - Fixed at top */}
+                                <div className="p-4 sm:p-6 border-b border-white/5 flex items-center justify-between bg-muted/10">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
+                                            <Zap className="w-4 h-4" />
+                                        </div>
+                                        <span className="font-black text-sm tracking-tight uppercase">Forge Menu</span>
                                     </div>
-                                    <span className="font-black text-sm tracking-tight uppercase">Forge Menu</span>
-                                </div>
-                                <button
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                    className="w-10 h-10 flex items-center justify-center rounded-xl bg-muted/40 text-muted-foreground hover:text-primary transition-colors"
-                                >
-                                    <ArrowRight className="w-5 h-5" />
-                                </button>
-                            </div>
-
-                            <div className="flex-1 overflow-y-auto pr-2 space-y-2 p-6 scrollbar-hide">
-                                {/* Search in Mobile Menu */}
-                                <div className="relative mb-8 pt-2">
-                                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                                    <input
-                                        type="text"
-                                        placeholder="Quick Search..."
-                                        className="w-full pl-11 pr-4 py-4 bg-muted/30 border border-white/5 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                                    />
+                                    <button
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                        className="w-10 h-10 flex items-center justify-center rounded-xl bg-muted/40 text-muted-foreground hover:text-primary transition-colors"
+                                    >
+                                        <ArrowRight className="w-5 h-5" />
+                                    </button>
                                 </div>
 
-                                {Object.entries(MEGA_MENU_DATA).map(([key, data]) => (
-                                    <MobileNavSection
-                                        key={key}
-                                        title={key}
-                                        data={data}
-                                        onClose={() => setIsMobileMenuOpen(false)}
-                                    />
-                                ))}
-
-                                <div className="pt-8 mt-4 border-t border-white/5 grid gap-2">
-                                    {EXTRA_LINKS.map(link => (
-                                        <Link
-                                            key={link.label}
-                                            href={link.href}
-                                            onClick={() => setIsMobileMenuOpen(false)}
-                                            className="p-4 flex items-center justify-between rounded-2xl hover:bg-white/5 transition-all group"
-                                        >
-                                            <span className="font-black text-sm uppercase tracking-widest text-white group-hover:text-primary">{link.label}</span>
-                                            <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-all translate-x-[-10px] group-hover:translate-x-0 text-primary" />
-                                        </Link>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Mobile User Profile Hook */}
-                            <div className="p-6 border-t border-white/5 bg-muted/10">
-                                <Link
-                                    href="/profile"
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                    className="flex items-center gap-4 p-4 rounded-2xl bg-foreground text-background font-black uppercase text-[10px] tracking-[0.2em] shadow-xl hover:scale-[1.02] transition-transform"
-                                >
-                                    <div className="w-8 h-8 rounded-lg bg-background/20 flex items-center justify-center">
-                                        <User className="w-4 h-4" />
+                                {/* Scrollable Content Area */}
+                                <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6 scrollbar-hide">
+                                    {/* Search in Mobile Menu */}
+                                    <div className="relative mb-4 sm:mb-6">
+                                        <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                        <input
+                                            type="text"
+                                            placeholder="Quick Search..."
+                                            className="w-full pl-10 sm:pl-11 pr-3 sm:pr-4 py-3 sm:py-4 bg-muted/30 border border-white/5 rounded-xl sm:rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                        />
                                     </div>
-                                    Commander Profile
-                                </Link>
+
+                                    {/* Navigation Sections */}
+                                    <div className="space-y-1">
+                                        {Object.entries(MEGA_MENU_DATA).map(([key, data]) => (
+                                            <MobileNavSection
+                                                key={key}
+                                                title={key}
+                                                data={data}
+                                                onClose={() => setIsMobileMenuOpen(false)}
+                                            />
+                                        ))}
+                                    </div>
+
+                                    {/* Extra Links */}
+                                    <div className="pt-4 sm:pt-6 mt-4 border-t border-white/5 space-y-1">
+                                        {EXTRA_LINKS.map(link => (
+                                            <Link
+                                                key={link.label}
+                                                href={link.href}
+                                                onClick={() => setIsMobileMenuOpen(false)}
+                                                className="p-3 sm:p-4 flex items-center justify-between rounded-xl sm:rounded-2xl hover:bg-white/5 transition-all group"
+                                            >
+                                                <span className="font-black text-xs sm:text-sm uppercase tracking-widest text-white group-hover:text-primary">{link.label}</span>
+                                                <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-all translate-x-[-10px] group-hover:translate-x-0 text-primary" />
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Mobile Footer - Fixed at bottom */}
+                                <div className="p-4 sm:p-6 border-t border-white/5 bg-muted/10">
+                                    <Link
+                                        href="/profile"
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                        className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-foreground text-background font-black uppercase text-[10px] tracking-[0.15em] sm:tracking-[0.2em] shadow-xl hover:scale-[1.02] transition-transform"
+                                    >
+                                        <div className="w-8 h-8 rounded-lg bg-background/20 flex items-center justify-center flex-shrink-0">
+                                            <User className="w-4 h-4" />
+                                        </div>
+                                        <span className="truncate">Commander Profile</span>
+                                    </Link>
+                                </div>
                             </div>
                         </motion.div>
                     </>

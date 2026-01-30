@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 export type UserStats = {
     completedArticles: string[];
@@ -11,14 +11,18 @@ export type UserStats = {
 
 const STORAGE_KEY = 'scaleforge_user_stats';
 
-export function useUserStats() {
-    const [stats, setStats] = useState<UserStats>({
-        completedArticles: [],
-        bookmarks: [],
-        notes: {},
-        history: [],
-    });
+const defaultStats: UserStats = {
+    completedArticles: [],
+    bookmarks: [],
+    notes: {},
+    history: [],
+};
 
+export function useUserStats() {
+    const [stats, setStats] = useState<UserStats>(defaultStats);
+    const isInitialized = useRef(false);
+
+    // Load from localStorage on mount
     useEffect(() => {
         const saved = localStorage.getItem(STORAGE_KEY);
         if (saved) {
@@ -28,46 +32,61 @@ export function useUserStats() {
                 console.error("Failed to load user stats", e);
             }
         }
+        isInitialized.current = true;
     }, []);
 
-    const saveStats = (newStats: UserStats) => {
-        setStats(newStats);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(newStats));
-    };
+    // Save to localStorage when stats change (after initialization)
+    useEffect(() => {
+        if (isInitialized.current) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
+        }
+    }, [stats]);
 
-    const markComplete = (slug: string) => {
-        if (stats.completedArticles.includes(slug)) return;
-        const newStats = { ...stats, completedArticles: [...stats.completedArticles, slug] };
-        saveStats(newStats);
-    };
+    const markComplete = useCallback((slug: string) => {
+        setStats(prev => {
+            if (prev.completedArticles.includes(slug)) return prev;
+            return { ...prev, completedArticles: [...prev.completedArticles, slug] };
+        });
+    }, []);
 
-    const toggleBookmark = (slug: string) => {
-        const isBookmarked = stats.bookmarks.includes(slug);
-        const newStats = {
-            ...stats,
-            bookmarks: isBookmarked
-                ? stats.bookmarks.filter(s => s !== slug)
-                : [...stats.bookmarks, slug]
-        };
-        saveStats(newStats);
-    };
+    const toggleBookmark = useCallback((slug: string) => {
+        setStats(prev => {
+            const isBookmarked = prev.bookmarks.includes(slug);
+            return {
+                ...prev,
+                bookmarks: isBookmarked
+                    ? prev.bookmarks.filter(s => s !== slug)
+                    : [...prev.bookmarks, slug]
+            };
+        });
+    }, []);
 
-    const saveNote = (slug: string, note: string) => {
-        const newStats = {
-            ...stats,
-            notes: { ...stats.notes, [slug]: note }
-        };
-        saveStats(newStats);
-    };
+    const saveNote = useCallback((slug: string, note: string) => {
+        setStats(prev => ({
+            ...prev,
+            notes: { ...prev.notes, [slug]: note }
+        }));
+    }, []);
 
-    const addToHistory = (slug: string) => {
-        const filteredHistory = stats.history.filter(s => s !== slug);
-        const newStats = {
-            ...stats,
-            history: [slug, ...filteredHistory].slice(0, 10) // Keep last 10
-        };
-        saveStats(newStats);
-    };
+    const addToHistory = useCallback((slug: string) => {
+        setStats(prev => {
+            // Check if already first in history to avoid unnecessary updates
+            if (prev.history[0] === slug) return prev;
+            const filteredHistory = prev.history.filter(s => s !== slug);
+            return {
+                ...prev,
+                history: [slug, ...filteredHistory].slice(0, 10) // Keep last 10
+            };
+        });
+    }, []);
+
+    const isCompleted = useCallback((slug: string) => {
+        return stats.completedArticles.includes(slug);
+    }, [stats.completedArticles]);
+
+    const isBookmarked = useCallback((slug: string) => {
+        return stats.bookmarks.includes(slug);
+    }, [stats.bookmarks]);
 
     return {
         stats,
@@ -75,7 +94,8 @@ export function useUserStats() {
         toggleBookmark,
         saveNote,
         addToHistory,
-        isCompleted: (slug: string) => stats.completedArticles.includes(slug),
-        isBookmarked: (slug: string) => stats.bookmarks.includes(slug),
+        isCompleted,
+        isBookmarked,
     };
 }
+

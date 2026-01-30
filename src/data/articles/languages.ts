@@ -139,9 +139,9 @@ type B = IsString<number>; // false
 
 ### 3. Utility Types
 TypeScript provides several built-in utilities:
-- **Partial<T>:** All properties optional.
-- **Pick<T, K>:** Select specific properties.
-- **ReturnType<T>:** Get the return type of a function.
+- **\`Partial<T>\`:** All properties optional.
+- **\`Pick<T, K>\`:** Select specific properties.
+- **\`ReturnType<T>\`:** Get the return type of a function.
 
 ## Interview Insights
 - Explain **Type Erasure:** How TS types don't exist in the compiled JS.

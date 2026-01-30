@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Outfit, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import Navbar from '@/components/Navbar';
@@ -23,22 +23,38 @@ export const metadata: Metadata = {
   keywords: ['system design', 'backend engineering', 'scalability', 'documentation'],
 };
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: 'cover',
+};
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${outfit.variable} ${jetbrainsMono.variable}`}>
-      <body className="min-h-screen bg-background text-foreground selection:bg-primary/20">
+    <html lang="en" className={`${outfit.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
+      <body className="min-h-screen bg-background text-foreground selection:bg-primary/20 antialiased">
         <Providers>
+          {/* Fixed Navbar */}
           <Navbar />
-          <div className="relative z-0">
-            {children}
+
+          {/* Main Content Area */}
+          <div id="main-content" className="relative z-0 flex flex-col min-h-screen">
+            {/* Page Content */}
+            <div className="flex-1">
+              {children}
+            </div>
+
+            {/* Footer */}
+            <Footer />
           </div>
-          <Footer />
         </Providers>
       </body>
     </html>
   );
 }
+

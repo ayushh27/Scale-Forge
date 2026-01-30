@@ -14,16 +14,26 @@ import {
     Map,
     PlayCircle,
     Clock,
-    Layout
+    Layout,
+    Flame
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useUserStats } from "@/hooks/useUserStats";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
+import { usePathProgress, useLearning } from "@/hooks/useLearningProgress";
+import { LEARNING_PATHS } from "@/data/learning-paths";
 
 export default function DomainHub({ data }: { data: HubData }) {
     const { isCompleted, stats } = useUserStats();
+
+    // Learning path system integration
+    const { progress: pathProgress, completion, nextTopic, startPath } = usePathProgress(data.id);
+    const { getStreak, getTotalCompleted } = useLearning();
+    const streak = getStreak();
+    const totalCompleted = getTotalCompleted();
+    const learningPath = LEARNING_PATHS[data.id];
 
     const colorMap = {
         emerald: "from-emerald-400/20 to-emerald-600/5 border-emerald-500/20 text-emerald-400",
@@ -34,10 +44,12 @@ export default function DomainHub({ data }: { data: HubData }) {
 
     const allTopics = Object.values(data.progression).flatMap(p => p.topics);
     const completedInHub = allTopics.filter(t => t.href.startsWith('/learn/') && isCompleted(t.href.split('/').pop() || '')).length;
-    const progressPercent = (completedInHub / allTopics.length) * 100;
+    const progressPercent = completion > 0 ? completion : (completedInHub / allTopics.length) * 100;
 
-    // Find first uncompleted topic
-    const firstUncompleted = allTopics.find(t => t.href.startsWith('/learn/') && !isCompleted(t.href.split('/').pop() || ''));
+    // Find first uncompleted topic - prefer learning path's next topic
+    const firstUncompleted = nextTopic
+        ? { href: `/learn/${nextTopic.slug}`, label: nextTopic.title }
+        : allTopics.find(t => t.href.startsWith('/learn/') && !isCompleted(t.href.split('/').pop() || ''));
 
     return (
         <div className="min-h-screen pb-20">
@@ -147,6 +159,19 @@ export default function DomainHub({ data }: { data: HubData }) {
                             transition={{ delay: 0.3, duration: 0.8 }}
                             className="lg:col-span-4 space-y-6 preserve-3d"
                         >
+                            {/* Streak Card */}
+                            {streak.current > 0 && (
+                                <div className="p-6 rounded-[2rem] bg-gradient-to-br from-amber-500/10 to-primary/5 border border-amber-500/20 flex items-center gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center">
+                                        <Flame className="w-6 h-6 text-amber-400" />
+                                    </div>
+                                    <div>
+                                        <div className="text-2xl font-black">{streak.current} Day Streak</div>
+                                        <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Best: {streak.longest} days</div>
+                                    </div>
+                                </div>
+                            )}
+
                             <div className="p-8 rounded-[2.5rem] glass-morphism border border-white/5 space-y-8 shadow-2xl transition-transform hover:scale-[1.02] hover:rotate-x-1 duration-500">
                                 <div className="flex items-center justify-between">
                                     <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Your Stats</h4>
@@ -159,8 +184,8 @@ export default function DomainHub({ data }: { data: HubData }) {
                                         <div className="text-[10px] font-bold uppercase text-muted-foreground">Labs done</div>
                                     </div>
                                     <div className="space-y-1">
-                                        <div className="text-3xl font-black">{Object.keys(stats.notes).filter(k => allTopics.some(t => t.href.endsWith(k))).length}</div>
-                                        <div className="text-[10px] font-bold uppercase text-muted-foreground">Notes added</div>
+                                        <div className="text-3xl font-black text-primary">{totalCompleted}</div>
+                                        <div className="text-[10px] font-bold uppercase text-muted-foreground">Total Topics</div>
                                     </div>
                                 </div>
 
