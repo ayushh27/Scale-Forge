@@ -14,7 +14,8 @@ import {
     Flame,
     Trophy,
     Star,
-    X
+    X,
+    Layers
 } from 'lucide-react';
 import {
     LearningPath,
@@ -37,9 +38,10 @@ const difficultyStyles = {
 interface TopicBreadcrumbProps {
     context: TopicContext;
     className?: string;
+    articleTitle?: string;
 }
 
-export function TopicBreadcrumb({ context, className }: TopicBreadcrumbProps) {
+export function TopicBreadcrumb({ context, className, articleTitle }: TopicBreadcrumbProps) {
     const { path, phase, topic, position } = context;
     const Icon = path.icon;
 
@@ -50,28 +52,32 @@ export function TopicBreadcrumb({ context, className }: TopicBreadcrumbProps) {
         )}>
             <Link
                 href="/hub"
-                className="hover:text-foreground transition-colors"
+                className="hover:text-primary transition-colors font-medium flex items-center gap-1.5"
             >
-                Learning Paths
+                <Layers className="w-3.5 h-3.5" />
+                Hubs
             </Link>
-            <ChevronRight className="w-3.5 h-3.5" />
+            <ChevronRight className="w-3.5 h-3.5 flex-shrink-0" />
             <Link
                 href={`/hub/${path.id}`}
-                className="flex items-center gap-1.5 hover:text-foreground transition-colors"
+                className="flex items-center gap-1.5 hover:text-primary transition-colors font-medium"
             >
                 <Icon className="w-3.5 h-3.5" />
                 {path.title}
             </Link>
-            <ChevronRight className="w-3.5 h-3.5" />
+            <ChevronRight className="w-3.5 h-3.5 flex-shrink-0" />
             <span className={cn(
-                "px-2 py-0.5 rounded-full border text-[10px] font-bold uppercase",
+                "px-2.5 py-1 rounded-full border text-[10px] font-bold uppercase",
                 difficultyStyles[topic.difficulty]
             )}>
                 {phase.title}
             </span>
-            <ChevronRight className="w-3.5 h-3.5" />
+            <ChevronRight className="w-3.5 h-3.5 flex-shrink-0" />
             <span className="text-foreground font-bold">
-                {position.phasePosition}/{position.phaseTotal}
+                {articleTitle || topic.title}
+            </span>
+            <span className="text-muted-foreground text-xs ml-1">
+                ({position.phasePosition}/{position.phaseTotal})
             </span>
         </nav>
     );

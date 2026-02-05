@@ -2,8 +2,8 @@ import { Article } from "@/hooks/useArticles";
 
 export const LANGUAGE_FOUNDATION_ARTICLES: Article[] = [
     {
-        id: "lang-foundational-overview",
-        slug: "mastering-programming-languages-beyond-syntax",
+        id: "lang-foundational-overview-v2",
+        slug: "programming-language-fundamentals",
         title: "Programming Mastery: Beyond the Syntax",
         description: "Why the best engineers focus on language internals rather than just learning new frameworks.",
         category: "Languages",
@@ -46,8 +46,8 @@ If you only know the syntax, you are a coder. If you know the internals, you are
         `
     },
     {
-        id: "lang-memory-management",
-        slug: "understanding-garbage-collection-and-manual-memory",
+        id: "lang-memory-management-v2",
+        slug: "memory-management-deep-dive",
         title: "Memory Architecture: The Collector & The Ownership",
         description: "An engineering deep-dive into how languages handle data storage and cleanup. GC vs RAII.",
         category: "Languages",

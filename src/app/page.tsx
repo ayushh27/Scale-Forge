@@ -4,15 +4,65 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Search, ArrowRight, Github, Server, Database, Zap, Shield, GitBranch, Globe, Cpu, Hash, Layers } from "lucide-react";
 import ThreeHero from "@/components/ThreeHero";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useArticles } from "@/hooks/useArticles";
+import { cn } from "@/lib/utils";
 
 export default function Home() {
+    const [searchQuery, setSearchQuery] = useState("");
+    const [searchResults, setSearchResults] = useState<any[]>([]);
+    const [showResults, setShowResults] = useState(false);
+    const router = useRouter();
+    const { data: articles } = useArticles();
+
+    // Search articles
+    useEffect(() => {
+        if (searchQuery.trim() && articles) {
+            const query = searchQuery.toLowerCase();
+            const results = articles
+                .filter(article =>
+                    article.title.toLowerCase().includes(query) ||
+                    article.description.toLowerCase().includes(query) ||
+                    article.tags.some(tag => tag.toLowerCase().includes(query)) ||
+                    article.category.toLowerCase().includes(query)
+                )
+                .slice(0, 5); // Top 5 results
+            setSearchResults(results);
+            setShowResults(true);
+        } else {
+            setSearchResults([]);
+            setShowResults(false);
+        }
+    }, [searchQuery, articles]);
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (searchResults.length > 0) {
+            // Redirect to first result
+            router.push(`/learn/${searchResults[0].slug}`);
+        } else if (searchQuery.trim()) {
+            // Redirect to learn page with search query
+            router.push(`/learn?search=${encodeURIComponent(searchQuery)}`);
+        }
+    };
+
+    const handleResultClick = (slug: string) => {
+        router.push(`/learn/${slug}`);
+        setSearchQuery("");
+        setShowResults(false);
+    };
+
     return (
         <div className="relative min-h-screen overflow-hidden">
             <ThreeHero />
 
             <main className="container mx-auto px-6 relative z-10">
                 {/* Hero Section */}
-                <section className="pt-24 pb-16 md:pt-48 md:pb-32 text-center max-w-5xl mx-auto perspective-2000">
+                <section className={cn(
+                    "pt-24 pb-16 md:pt-48 text-center max-w-5xl mx-auto perspective-2000 transition-all duration-300",
+                    showResults && searchResults.length > 0 ? "md:pb-96" : "md:pb-32"
+                )}>
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9, rotateX: 10 }}
                         animate={{ opacity: 1, scale: 1, rotateX: 0 }}
@@ -34,22 +84,87 @@ export default function Home() {
                             <span className="text-foreground"> fault-tolerant</span> systems and mastering professional software design.
                         </p>
 
-                        {/* Search Box */}
-                        <div className="relative max-w-3xl mx-auto mb-16 md:mb-20 preserve-3d px-4 md:px-0">
+                        {/* Enhanced Search Box with Results */}
+                        <form onSubmit={handleSearch} className="relative max-w-3xl mx-auto mb-16 md:mb-20 preserve-3d px-4 md:px-0">
                             <div className="absolute inset-x-0 -bottom-10 h-20 bg-primary/10 blur-[100px] -z-10" />
                             <div className="relative group">
-                                <Search className="absolute left-6 md:left-10 top-1/2 -translate-y-1/2 w-5 h-5 md:w-8 md:h-8 text-muted-foreground group-focus-within:text-primary group-focus-within:scale-110 transition-all" />
+                                <Search className="absolute left-6 md:left-10 top-1/2 -translate-y-1/2 w-5 h-5 md:w-8 md:h-8 text-muted-foreground group-focus-within:text-primary group-focus-within:scale-110 transition-all z-10" />
                                 <input
                                     type="text"
-                                    placeholder="Architect a Distributed DFS..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    placeholder="Search DSA, System Design, Distributed Systems..."
                                     className="w-full pl-14 md:pl-24 pr-6 md:pr-12 py-4 md:py-10 glass-morphism border border-white/10 rounded-[2rem] md:rounded-[3rem] text-base md:text-2xl shadow-[0_40px_100px_-20px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary/30 transition-all font-black placeholder:text-muted-foreground/30"
                                 />
                                 <div className="absolute right-6 top-1/2 -translate-y-1/2 hidden md:flex gap-2">
                                     <kbd className="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black text-muted-foreground uppercase">Ctrl</kbd>
                                     <kbd className="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black text-muted-foreground uppercase">K</kbd>
                                 </div>
+
+                                {/* Search Results Dropdown - Fixed Background */}
+                                {showResults && searchResults.length > 0 && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: 10 }}
+                                        className="absolute top-full mt-6 left-0 right-0 bg-background/95 backdrop-blur-2xl border border-white/10 rounded-3xl overflow-hidden shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] z-50"
+                                    >
+                                        <div className="p-2">
+                                            <div className="px-5 py-3 flex items-center justify-between border-b border-white/10">
+                                                <span className="text-xs font-black text-muted-foreground uppercase tracking-[0.2em]">
+                                                    Top Results
+                                                </span>
+                                                <span className="text-xs font-black text-primary">
+                                                    {searchResults.length}
+                                                </span>
+                                            </div>
+                                            <div className="py-2">
+                                                {searchResults.map((result, index) => (
+                                                    <button
+                                                        key={result.id}
+                                                        onClick={() => handleResultClick(result.slug)}
+                                                        className="w-full text-left px-4 py-3 rounded-2xl hover:bg-white/5 transition-all group flex items-center gap-4"
+                                                    >
+                                                        {/* Number Badge */}
+                                                        <div className="flex-shrink-0 w-8 h-8 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+                                                            <span className="text-primary font-black text-sm">
+                                                                {index + 1}
+                                                            </span>
+                                                        </div>
+
+                                                        {/* Content */}
+                                                        <div className="flex-grow min-w-0">
+                                                            <div className="font-black text-base mb-1 group-hover:text-primary transition-colors truncate">
+                                                                {result.title}
+                                                            </div>
+                                                            <div className="text-xs text-muted-foreground line-clamp-1 mb-2">
+                                                                {result.description}
+                                                            </div>
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="px-2 py-0.5 rounded-md bg-primary/10 border border-primary/20 text-[10px] font-black text-primary uppercase tracking-wider">
+                                                                    {result.category}
+                                                                </span>
+                                                                <span className="text-[10px] text-muted-foreground">•</span>
+                                                                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide">
+                                                                    {result.difficulty}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Arrow */}
+                                                        <div className="flex-shrink-0">
+                                                            <div className="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center group-hover:bg-primary group-hover:scale-110 transition-all">
+                                                                <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-background transition-colors" />
+                                                            </div>
+                                                        </div>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
                             </div>
-                        </div>
+                        </form>
 
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-8 px-6">
                             <Link href="/learn" className="w-full sm:w-auto px-8 md:px-14 py-4 md:py-7 bg-primary text-background rounded-2xl md:rounded-[2rem] font-black text-xs uppercase tracking-widest hover:shadow-primary/30 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-4 group shadow-2xl text-center">

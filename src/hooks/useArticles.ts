@@ -8,6 +8,7 @@ import { LINEAR_DSA_ARTICLES } from "@/data/dsa/linear";
 import { NONLINEAR_DSA_ARTICLES } from "@/data/dsa/nonlinear";
 import { GRAPH_DSA_ARTICLES } from "@/data/dsa/graphs";
 import { PATTERN_DSA_ARTICLES } from "@/data/dsa/patterns";
+import { DSA_EXPANDED_ARTICLES } from "@/data/dsa";
 
 // System Design
 import { SD_FOUNDATION_ARTICLES } from "@/data/system-design/foundations";
@@ -38,7 +39,6 @@ import { COMPUTER_SCIENCE_ARTICLES } from "@/data/articles/cs-core";
 import { COMPARISON_ARTICLES } from "@/data/articles/comparisons";
 import { CASE_STUDY_ARTICLES } from "@/data/articles/case-studies";
 import { INTERVIEW_PREP_ARTICLES } from "@/data/articles/interview-prep";
-import { LANGUAGES_ARTICLES } from "@/data/articles/languages";
 
 export type Article = {
     id: string;
@@ -66,6 +66,7 @@ const ALL_ARTICLES: Article[] = [
     ...NONLINEAR_DSA_ARTICLES,
     ...GRAPH_DSA_ARTICLES,
     ...PATTERN_DSA_ARTICLES,
+    ...DSA_EXPANDED_ARTICLES,
 
     // System Design
     ...SD_FOUNDATION_ARTICLES,
@@ -96,7 +97,6 @@ const ALL_ARTICLES: Article[] = [
     ...COMPARISON_ARTICLES,
     ...CASE_STUDY_ARTICLES,
     ...INTERVIEW_PREP_ARTICLES,
-    ...LANGUAGES_ARTICLES
 ];
 
 export function useArticles() {
